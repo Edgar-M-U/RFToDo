@@ -43,5 +43,6 @@ Actualmente esta:
     "DbConnection": "Server={SERVIDOR}\{INSTANCIA};Database=ToDoDB;User ID=TodoAdmin;Password=Admin123*;Trusted_Connection=False;Trust Server Certificate=true"
   }
 
-3. Verificar que la solucion este configurada para arrancar multiples proyectos. Sera necesario configurar el arranque del proyecto RfToDoAPI (WEB API CORE) para iniciar antes que el de RfToDo (Blazor WASM).
+3. Verificar que la solucion este configurada para arrancar multiples proyectos. 
+Sera necesario configurar el arranque del proyecto RfToDoAPI (WEB API CORE) para iniciar antes que el de RfToDo (Blazor WASM).
 4. El programa estara listo para su uso.
