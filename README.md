@@ -1,5 +1,5 @@
 Para utilizar el programa sera necesario ejecutar el siguiente script en la base de datos:
-1.
+1. 
 /**************************************************************************************\
 CREATE DATABASE ToDoDB
 GO
@@ -43,4 +43,5 @@ Actualmente esta:
     "DbConnection": "Server={SERVIDOR}\{INSTANCIA};Database=ToDoDB;User ID=TodoAdmin;Password=Admin123*;Trusted_Connection=False;Trust Server Certificate=true"
   }
 
-El programa estara listo para su uso.
+3. Verificar que la solucion este configurada para arrancar multiples proyectos. Sera necesario configurar el arranque del proyecto RfToDoAPI (WEB API CORE) para iniciar antes que el de RfToDo (Blazor WASM).
+4. El programa estara listo para su uso.
