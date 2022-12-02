@@ -1,0 +1,172 @@
+﻿@page "/"
+
+<div class="container-fluid min-vh-100 d-flex flex-column bg-light">
+    <div class="row">
+        <div class="col">
+            <h3>Control de metas</h3>
+        </div>
+    </div>
+    <div class="row flex-grow-1">
+        <div class="col-md-3 border">
+           <div class="p-2">
+               <button class="btn btn-success" @onclick="@(() => ModalShow("Meta"))">
+                   <i class="fa-solid fa-plus"></i> Nueva Meta
+               </button>
+           </div>
+           <div class="row">
+                @if (MetasList.Count == 0)
+                {
+                    <span>No hay metas.</span>
+                }
+                else
+                {
+                    <RadzenDataList Data="@MetasList" TItem="MetaModel" class="m-0 p-0"
+                                WrapItems="false" AllowPaging="false" PagerHorizontalAlign="HorizontalAlign.Left">
+                        <Template Context="meta">
+                            @*<RadzenCard>*@
+                            <div class="container m-0 p-0" @onclick="@(() => { ChangeSelectedMeta(meta); })">
+                                <div class="d-flex bd-highlight">
+                                    <div class="col-10">
+                                        <div class="bd-highlight align-middle">
+                                            <h6 class="m-0 p-0"><b>@(meta.Nombre)</b></h6>
+                                            <div class="row ps-1 mt-0 pt-0">
+                                                <h6 style="color:gray">Fecha creada: @(meta.Fecha_Creacion.ToString("dd/MM/yyyy"))</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="ms-auto bd-highlight">
+                                            <button class="btn p-0" @onclick="@(() => ModalShow(meta))"><i class="fas fa-pencil"></i></button>
+                                            <button class="btn p-0" @onclick="@(() => DeleteMeta(meta))"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="d-flex bd-highlight m-0 p-0">
+                                        <div>Tareas completadas: @meta.TareasCompletadas/@meta.TotalTareas</div>
+                                        <div class="ms-auto bd-highlight">@meta.Porcentaje</div>
+                                    </div>
+                                    <div class="m-e-6">
+                                        <RadzenProgressBar Value="@meta.TareasCompletadas"
+                                                       Max="@meta.TotalTareas"></RadzenProgressBar>
+                                    </div>
+                                </div>
+                            </div>
+                            @*</RadzenCard>*@
+                        </Template>
+                    </RadzenDataList>
+                }
+           </div>
+            
+        </div>
+
+
+        <div class="col-md-9 border">
+            @if (ShowModal)
+            {
+                <div class="modal fade show" id="myModal" style="display:block; position:absolute" aria-modal="true" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header" style="background-color:lightblue;">
+                                <h4 class="modal-title">Agregar nueva @Opcion</h4>
+                                <button type="button" class="close bg-transparent" @onclick="ModalCancel">&times;</button>
+                            </div>
+
+                            <!-- Modal body -->
+                            <div class="modal-body">
+                                <RadzenCard>
+                                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Nombre:</RadzenText>
+                                    @if (Opcion == "Meta")
+                                    {
+                                        <RadzenTextBox @bind-Value="NuevaMeta.Nombre" Class="w-100" />
+                                    }
+                                    else
+                                    {
+                                        <RadzenTextBox @bind-Value="NuevaTarea.Nombre" Class="w-100" />
+                                    }
+                                </RadzenCard>
+                            </div>
+
+                            <!-- Modal footer -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn" @onclick="ModalCancel">Cancelar</button>
+                                <button type="button" class="btn btn-success" @onclick=ModalAccept>Aceptar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+            }
+
+            @if (SelectedMetas.Count > 0 || MetaSeleccionada != null)
+            {
+                <div class="m-3">
+                    <button class="btn btn-success me-1" @onclick="@(() => ModalShow("Tarea"))"><i class="oi fas fa-plus"></i>Agregar Tarea</button>
+                    @if (ShowButtons)
+                    {
+                        <button class="btn btn-success me-1" @onclick="@(() => CompletarTareas())"><i class="oi fas fa-check"></i>Completar Tarea</button>
+                        @if (ShowEditar)
+                        {
+                            <button class="btn btn-success ms-0 me-1" @onclick="@(() => ModalShow("EditarTarea"))"><i class="oi fas fa-pencil"></i>Editar</button>
+                        }
+                        <button class="btn btn-success ms-0" @onclick="@(() => DeleteTarea())"><i class="oi fas fa-trash"></i>Eliminar</button>
+                    }
+                    
+                </div>
+                
+                <div class="m-3">
+                    @if (MetaSeleccionada != null)
+                    {
+                        <b>Meta Actual: @MetaSeleccionada.Nombre</b>
+                    }
+                   
+                </div>
+                
+                <div class="row p-2 m-2">
+                    <RadzenDataGrid @ref="GridTareas" TItem="TareaModel" Data="TareasList" @bind-Value="SelectedTareas"
+                                    AllowRowSelectOnRowClick="false" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                AllowPaging="true" PageSize="5" AllowSorting="true" SelectionMode="DataGridSelectionMode.Multiple">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="TareaModel" Width="60px" Sortable="false" Filterable="false">
+                                <HeaderTemplate>
+                                    <RadzenCheckBox TriState="false" TValue="bool" Value="@(TareasList.Any(i => SelectedTareas != null && SelectedTareas.Contains(i)))"
+                                                    Change="@(args => SelectedTareas = args ? TareasList.ToList() : null)" />
+                                </HeaderTemplate>
+                                <Template Context="data">
+                                    <RadzenCheckBox TriState="false" Value="@(SelectedTareas != null && SelectedTareas.Contains(data))"
+                                                TValue="bool" Change=@(args => { GridTareas.SelectRow(data); SelectionChange(); }) />
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="TareaModel" Property="Importante" Width="60px" Sortable="false" Filterable="false">
+                                <Template Context="data">
+                                        <button class="btn p-0 m-0" @onclick="@(() => UpdateImportancia(data))">
+                                            @if (data.Importante)
+                                            {
+                                                
+                                                <i class="fa-solid fa-star"></i>
+                                            }
+                                            else
+                                            {
+                                                
+                                                <i class="fa-regular fa-star"></i>
+                                            }
+                                        </button>
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="TareaModel" Property="Nombre" Title="Tarea" />
+                            <RadzenDataGridColumn TItem="TareaModel" Property="Fecha_Creacion" Title="Fecha" />
+                            <RadzenDataGridColumn TItem="TareaModel" Property="Estado" Title="Estado" />
+                        </Columns>
+                    </RadzenDataGrid>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+

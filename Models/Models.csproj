@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="MetaModel.cs~RF10dec827.TMP" />
+    <None Remove="Metas.cs~RFc31a8e5.TMP" />
+    <None Remove="TareaModel.cs~RF101a6909.TMP" />
+    <None Remove="TareaModel.cs~RF115a31e7.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SD\SD.csproj" />
+  </ItemGroup>
+
+</Project>
